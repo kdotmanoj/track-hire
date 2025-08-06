@@ -4,6 +4,17 @@ const app = express();
 
 app.use(express.json());
 
+app.get('/jobs', async (request,response) => {
+    try{
+        const [rows] = await pool.query(`SELECT * FROM jobs`);
+        response.status(200).json(rows);
+    }
+    catch(error){
+        console.error('Error fetching jobs',error)
+        response.status(500).json({error: 'Internal server error'});
+    }
+})
+
 app.post('/jobs', async (request,response) => {
     const {
         job_title,
