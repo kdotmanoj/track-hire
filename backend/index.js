@@ -15,6 +15,21 @@ app.get('/jobs', async (request,response) => {
     }
 })
 
+app.get('/jobs/:id', async (request,response) => {
+    const {id} = request.params;
+    try{
+        const [rows] = await pool.query(`SELECT * FROM jobs WHERE job_id = ?`,[id]);
+        if(rows.length == 0){
+            return response.status(404).json({error: "Job not found"});
+        }
+        response.status(200).json(rows);
+    }
+    catch(error){
+        console.error('Error fetching the job',error);
+        response.status(500).json({error: 'Internal server error'});
+    }
+});
+
 app.post('/jobs', async (request,response) => {
     const {
         job_title,
