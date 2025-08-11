@@ -70,4 +70,8 @@ app.post('/jobs', async (request,response) => {
     }
 });
 
+app.put('/jobs/:id', async (request,response) => {
+    console.log(request);
+    response.json({message: "done"});
+});
 app.listen(5000);
