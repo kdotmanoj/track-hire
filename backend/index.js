@@ -71,7 +71,46 @@ app.post('/jobs', async (request,response) => {
 });
 
 app.put('/jobs/:id', async (request,response) => {
-    console.log(request);
-    response.json({message: "done"});
+    const {id} = request.params;
+
+    const {
+        job_title,
+        company_name,
+        salary,
+        description,
+        application_status,
+        date_applied
+    } = request.body;
+
+    try{
+        const [result] = await pool.query(
+            `UPDATE jobs SET
+                job_title = ?,
+                company_name = ?,
+                salary = ?,
+                description = ?,
+                application_status = ?,
+                date_applied = ?
+            WHERE job_id = ?`,
+            [
+                job_title,
+                company_name,
+                salary,
+                description,
+                application_status,
+                date_applied,
+                id
+            ]
+        )
+
+        if(result.affectedRows == 0){
+            return response.status(404).json({error: "Couldn't find the job"});
+        }
+        response.status(200).json({message: "Job updated successfully"});
+    }
+    catch(error){
+        console.error('Error updating the job',error);
+        response.status(500).json({error: "Internal server error"});
+    }
 });
 app.listen(5000);
