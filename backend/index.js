@@ -113,4 +113,20 @@ app.put('/jobs/:id', async (request,response) => {
         response.status(500).json({error: "Internal server error"});
     }
 });
+
+app.delete('/jobs/:id', async (request, response) => {
+    const {id} = request.params;
+    try{
+        const [result] = await pool.query(`DELETE FROM jobs WHERE job_id = ?`,[id]);
+
+        if(request.affectedRows == 0){
+            return response.status(404).json({error: "Couldn't find the job"});
+        }
+        response.status(200).json({message: "Job deleted successfully"});
+    }
+    catch(error){
+        console.error('Error deleting the job', error);
+        response.status(500).json({error: "Internal server error"});
+    }
+});
 app.listen(5000);
