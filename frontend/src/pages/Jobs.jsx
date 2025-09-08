@@ -1,11 +1,11 @@
 import React from 'react'
 
-function Dashboard() {
+function Jobs() {
   return (
     <div className='bg-blue-950'>
-      <h2>Hi i am Dashboard</h2>
+      <h2>Hi i am Jobs</h2>
     </div>
   )
 }
 
-export default Dashboard
+export default Jobs

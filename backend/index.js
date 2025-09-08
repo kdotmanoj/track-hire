@@ -1,6 +1,15 @@
 const express = require('express');
-const pool = require('./database')
+const pool = require('./database');
+const cors = require('cors');
+
 const app = express();
+const PORT = 5000;
+
+app.use(cors({
+    origin: 'http://localhost:5173/',
+    methods: ['GET','POST','PUT','DELETE'],
+    credentials: true
+}));
 
 app.use(express.json());
 
@@ -129,4 +138,7 @@ app.delete('/jobs/:id', async (request, response) => {
         response.status(500).json({error: "Internal server error"});
     }
 });
-app.listen(5000);
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
