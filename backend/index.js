@@ -6,7 +6,7 @@ const app = express();
 const PORT = 5000;
 
 app.use(cors({
-    origin: 'http://localhost:5173/',
+    origin: 'http://localhost:5173',
     methods: ['GET','POST','PUT','DELETE'],
     credentials: true
 }));
@@ -128,7 +128,7 @@ app.delete('/jobs/:id', async (request, response) => {
     try{
         const [result] = await pool.query(`DELETE FROM jobs WHERE job_id = ?`,[id]);
 
-        if(request.affectedRows == 0){
+        if(result.affectedRows == 0){
             return response.status(404).json({error: "Couldn't find the job"});
         }
         response.status(200).json({message: "Job deleted successfully"});

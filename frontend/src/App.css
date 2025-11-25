@@ -1,0 +1,12 @@
+.dashboard-container{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 10px;
+}
+
+.job-card{
+    width: 300px;
+    padding: 16px;
+    border: 1px solid;
+}
