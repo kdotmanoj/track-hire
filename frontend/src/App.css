@@ -10,3 +10,21 @@
     padding: 16px;
     border: 1px solid;
 }
+
+.modal-overlay{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    top: 0;
+    left: 0;
+}
+
+.modal-content {
+    padding: 50px;
+    background-color: bisque;
+    border: solid;
+}
