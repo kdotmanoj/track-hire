@@ -8,18 +8,18 @@ function Dashboard(){
     const [jobs,setJobs] = useState([]);
     const [showModal,setShowModal] = useState(false);
 
-    useEffect(() => {
-        const fetchJobs = async () => {
-            try{
-                const response = await fetch('http://localhost:5000/jobs');
-                const data = await response.json();
-                
-                setJobs(data);
-            }
-            catch(error){
-                console.error("Error fetching jobs",error);
-            }
+    const fetchJobs = async () => {
+        try{
+            const response = await fetch('http://localhost:5000/jobs');
+            const data = await response.json();
+            
+            setJobs(data);
         }
+        catch(error){
+            console.error("Error fetching jobs",error);
+        }
+    }
+    useEffect(() => {
 
         fetchJobs();
     },[])
@@ -37,7 +37,7 @@ function Dashboard(){
                 })}
             </div>
             
-            {showModal && <div className="modal-overlay"><NewJobForm closeModal={close} /></div>}
+            {showModal && <div className="modal-overlay"><NewJobForm closeModal={close} fetchJobs={fetchJobs}/></div>}
         </div>
     )
 }
