@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import JobCard from "../components/JobCard";
 import NewJobForm from "../components/NewJobForm";
 
@@ -53,10 +54,10 @@ function Dashboard(){
 
     return (
         <div>
-            <button onClick={() => {
+            <Button onClick={() => {
                 setEditData(null);
                 setShowModal(true)
-            }}>Add Job</button>
+            }}>Add Job</Button>
             <div className="dashboard-container">
                 {jobs.map((job) => {
                     return <JobCard key={job.job_id} id={job.job_id} title={job.job_title} company={job.company_name} status={job.application_status} deleteJob={handleDelete} editJob={handleEdit}/>

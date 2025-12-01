@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react"
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { Button } from "./ui/button";
 
 function NewJobForm ({closeModal, fetchJobs, editData}){
     const [title,setTitle] = useState("");
@@ -40,12 +43,12 @@ function NewJobForm ({closeModal, fetchJobs, editData}){
     return (
         <div className="modal-content">
             <form onSubmit={handleSubmit}>
-                <label htmlFor="job-title">Job Title</label>
-                <input type="text" id="job-title" name="job-title" value={title} onChange={(e) => setTitle(e.target.value)}/>
-                <label htmlFor="company">Company</label>
-                <input type="text" id="company" name="company" value={company} onChange={(e) => setCompany(e.target.value)}/>
-                <button type="submit">Submit</button>
-                <button onClick={closeModal}>Cancel</button>
+                <Label htmlFor="job-title">Job Title</Label>
+                <Input type="text" id="job-title" name="job-title" value={title} onChange={(e) => setTitle(e.target.value)}/>
+                <Label htmlFor="company">Company</Label>
+                <Input type="text" id="company" name="company" value={company} onChange={(e) => setCompany(e.target.value)}/>
+                <Button type="submit">Submit</Button>
+                <Button type="button" onClick={closeModal}>Cancel</Button>
             </form>
         </div>
     )
