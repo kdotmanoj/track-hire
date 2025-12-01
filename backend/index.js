@@ -104,10 +104,10 @@ app.put('/jobs/:id', async (request,response) => {
             [
                 job_title,
                 company_name,
-                salary,
-                description,
-                application_status,
-                date_applied,
+                salary || null,
+                description || null,
+                application_status || 'Applied',
+                date_applied || null,
                 id
             ]
         )

@@ -1,8 +1,18 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
-function NewJobForm ({closeModal, fetchJobs}){
+function NewJobForm ({closeModal, fetchJobs, editData}){
     const [title,setTitle] = useState("");
     const [company,setCompany] = useState("");
+
+    useEffect(() => {
+        if(editData){
+            setTitle(editData.job_title);
+            setCompany(editData.company_name);
+        }else{
+            setTitle("");
+            setCompany("");
+        }
+    },[editData]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -11,8 +21,11 @@ function NewJobForm ({closeModal, fetchJobs}){
             job_title: title,
             company_name: company
         }
-        const response = await fetch("http://localhost:5000/jobs",{
-            method: "POST",
+        const url = editData ? `http://localhost:5000/jobs/${editData.job_id}` : `http://localhost:5000/jobs`;
+        const currentMethod = editData ? "PUT" : "POST";
+        
+        const response = await fetch(url,{
+            method: currentMethod,
             headers: {
                 "Content-Type": "application/json",
             },
