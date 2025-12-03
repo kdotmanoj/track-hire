@@ -1,12 +1,29 @@
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Button } from "./ui/button"
+
 function JobCard({id,title,company,status,deleteJob,editJob}) {
     return (
-        <div className="job-card">
-            <div>{title}</div>
-            <div>{company}</div>
-            <div>{status}</div>
-            <button className="border p-2" onClick={() => {editJob(id)}}>Edit</button>
-            <button className="border p-2" onClick={() => {deleteJob(id)}}>Delete</button>
-        </div>
+        <Card className="w-[250px] shadow-lg hover:shadow-xl transition-shadow">
+            <CardHeader>
+                <CardTitle>{title}</CardTitle>
+                <CardDescription>{company}</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="text-sm text-muted-foreground">{status}</div>
+            </CardContent>
+            <CardFooter className="flex justify-between">
+                <Button variant="outline" className="" onClick={() => {editJob(id)}}>Edit</Button>
+                <Button variant="destructive" className="" onClick={() => {deleteJob(id)}}>X</Button>
+            </CardFooter>
+        </Card>
     )
 }
 
