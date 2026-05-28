@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card"
 import { Button } from "./ui/button"
 
-function JobCard({id,title,company,status,deleteJob,editJob}) {
+function JobCard({id,title,company,status,salary,deleteJob,editJob}) {
     return (
         <Card className="w-[250px] shadow-lg hover:shadow-xl transition-shadow">
             <CardHeader>
@@ -18,6 +18,8 @@ function JobCard({id,title,company,status,deleteJob,editJob}) {
             </CardHeader>
             <CardContent>
                 <div className="text-sm text-muted-foreground">{status}</div>
+                <div className="text-sm text-muted-foreground">{salary}</div>
+
             </CardContent>
             <CardFooter className="flex justify-between">
                 <Button variant="outline" className="" onClick={() => {editJob(id)}}>Edit</Button>

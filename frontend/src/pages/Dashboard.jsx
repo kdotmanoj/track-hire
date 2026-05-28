@@ -60,7 +60,7 @@ function Dashboard(){
             }}>Add Job</Button>
             <div className="dashboard-container">
                 {jobs.map((job) => {
-                    return <JobCard key={job.job_id} id={job.job_id} title={job.job_title} company={job.company_name} status={job.application_status} deleteJob={handleDelete} editJob={handleEdit}/>
+                    return <JobCard key={job.job_id} id={job.job_id} title={job.job_title} company={job.company_name} status={job.application_status} salary={job.salary} deleteJob={handleDelete} editJob={handleEdit}/>
                 })}
             </div>
             
