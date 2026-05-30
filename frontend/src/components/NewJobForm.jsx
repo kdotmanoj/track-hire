@@ -18,6 +18,14 @@ function NewJobForm ({closeModal, fetchJobs, editData}){
     const [description,setDescription] = useState("");
     const [applicationStatus,setApplicationStatus] = useState("");
     const [dateApplied,setDateApplied] = useState("");
+    const [formData,setFormData] = useState({
+        job_title: "",
+        company: "",
+        salary: "",
+        description: "",
+        applicationStatus: "",
+        dateApplied: ""
+    });
 
 
 

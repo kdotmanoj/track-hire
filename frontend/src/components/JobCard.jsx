@@ -19,7 +19,8 @@ function JobCard({id,title,company,status,salary,deleteJob,editJob}) {
             <CardContent>
                 <div className="text-sm text-muted-foreground">{status}</div>
                 <div className="text-sm text-muted-foreground">{salary}</div>
-
+                
+                
             </CardContent>
             <CardFooter className="flex justify-between">
                 <Button variant="outline" className="" onClick={() => {editJob(id)}}>Edit</Button>
