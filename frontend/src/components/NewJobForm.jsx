@@ -12,19 +12,14 @@ import {
 } from "./ui/select";
 
 function NewJobForm ({closeModal, fetchJobs, editData}){
-    const [title,setTitle] = useState("");
-    const [company,setCompany] = useState("");
-    const [salary,setSalary] = useState("");
-    const [description,setDescription] = useState("");
-    const [applicationStatus,setApplicationStatus] = useState("");
-    const [dateApplied,setDateApplied] = useState("");
+    
     const [formData,setFormData] = useState({
         job_title: "",
-        company: "",
+        company_name: "",
         salary: "",
         description: "",
-        applicationStatus: "",
-        dateApplied: ""
+        application_status: "",
+        date_applied: ""
     });
 
 
@@ -32,33 +27,39 @@ function NewJobForm ({closeModal, fetchJobs, editData}){
 
     useEffect(() => {
         if(editData){
-            setTitle(editData.job_title);
-            setCompany(editData.company_name);
-            setSalary(editData.salary);
-            setDescription(editData.description);
-            setApplicationStatus(editData.application_status);
-            setDateApplied(editData.date_applied?.slice(0,10));
+            setFormData({
+                job_title : editData.job_title,
+                company_name : editData.company_name,
+                salary : editData.salary,
+                description : editData.description,
+                application_status : editData.application_status,
+                date_applied : editData.date_applied?.slice(0,10) ?? ""
+            })
         }else{
-            setTitle("");
-            setCompany("");
-            setSalary("");
-            setDescription("");
-            setApplicationStatus("");
-            setDateApplied("");
+            setFormData({
+                job_title: "",
+                company_name: "",
+                salary: "",
+                description: "",
+                application_status: "",
+                date_applied: ""
+            })
         }
     },[editData]);
 
+    const handleChange = (e) => {
+        
+        const {name,value} = e.target;
+        setFormData(prev => (
+            {
+                ...prev,
+                [name] : name === "salary" && value !== "" ? Number(value) : value
+            }
+        ))
+    }
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const jobData = {
-            job_title: title,
-            company_name: company,
-            salary: salary,
-            description: description,
-            application_status: applicationStatus,
-            date_applied: dateApplied
-        }
         const url = editData ? `http://localhost:5000/jobs/${editData.job_id}` : `http://localhost:5000/jobs`;
         const currentMethod = editData ? "PUT" : "POST";
         
@@ -67,36 +68,38 @@ function NewJobForm ({closeModal, fetchJobs, editData}){
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(jobData)
+            body: JSON.stringify(formData)
         });
 
-        setTitle("");
-        setCompany("");
-        setSalary("");
-        setDescription("");
-        setApplicationStatus("");
-        setDateApplied("");
+        setFormData({
+            job_title: "",
+            company_name: "",
+            salary: "",
+            description: "",
+            application_status: "",
+            date_applied: ""
+        })
         closeModal();
         fetchJobs();
     }
     return (
         <div className="modal-content">
             <form onSubmit={handleSubmit}>
-                <Label htmlFor="job-title">Job Title</Label>
-                <Input type="text" id="job-title" name="job-title" value={title} onChange={(e) => setTitle(e.target.value)}/>
+                <Label htmlFor="job_title">Job Title</Label>
+                <Input type="text" id="job_title" name="job_title" value={formData.job_title} onChange={handleChange}/>
                 
-                <Label htmlFor="company">Company</Label>
-                <Input type="text" id="company" name="company" value={company} onChange={(e) => setCompany(e.target.value)}/>
+                <Label htmlFor="company_name">Company</Label>
+                <Input type="text" id="company_name" name="company_name" value={formData.company_name} onChange={handleChange}/>
 
                 <Label htmlFor="salary">Salary</Label>
-                <Input type="number" id="salary" name="salary" value={salary} onChange={(e) => setSalary(e.target.value === "" ? "" : Number(e.target.value))}/>
+                <Input type="number" id="salary" name="salary" value={formData.salary} onChange={handleChange}/>
 
                 <Label htmlFor="description">Description</Label>
-                <Textarea id="description" name="description" value={description} onChange={(e) => setDescription(e.target.value)}/>
+                <Textarea id="description" name="description" value={formData.description} onChange={handleChange}/>
 
-                <Label htmlFor="application-status">Application Status</Label>
-                <Select value={applicationStatus} onValueChange={setApplicationStatus}>
-                    <SelectTrigger id="application-status">
+                <Label htmlFor="application_status">Application Status</Label>
+                <Select value={formData.application_status} onValueChange ={(value) => setFormData(prev => ({...prev,application_status : value}))} >
+                    <SelectTrigger id="application_status">
                         <SelectValue placeholder="Select status"/>
                     </SelectTrigger>
                     <SelectContent>
@@ -107,8 +110,8 @@ function NewJobForm ({closeModal, fetchJobs, editData}){
                     </SelectContent>
                 </Select>
 
-                <Label htmlFor="date-applied">Date Applied</Label>
-                <Input type="date" id="date-applied" name="date-applied" value={dateApplied} onChange={(e) => setDateApplied(e.target.value)}/>
+                <Label htmlFor="date_applied">Date Applied</Label>
+                <Input type="date" id="date_applied" name="date_applied" value={formData.date_applied} onChange={handleChange}/>
 
                 <Button type="submit">Submit</Button>
                 <Button type="button" onClick={closeModal}>Cancel</Button>

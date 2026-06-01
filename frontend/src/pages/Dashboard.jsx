@@ -43,8 +43,8 @@ function Dashboard(){
             console.error("Couldn't delete the job",error);
         }
     }   
-    useEffect(() => {
 
+    useEffect(() => {
         fetchJobs();
     },[])
 
