@@ -12,15 +12,16 @@ import {
 } from "./ui/select";
 
 function NewJobForm ({closeModal, fetchJobs, editData}){
-    
-    const [formData,setFormData] = useState({
+    const INITIAL_FORM = {
         job_title: "",
         company_name: "",
         salary: "",
         description: "",
         application_status: "",
-        date_applied: ""
-    });
+        date_applied: "",
+    };
+    
+    const [formData,setFormData] = useState(INITIAL_FORM);
 
 
 
@@ -36,14 +37,7 @@ function NewJobForm ({closeModal, fetchJobs, editData}){
                 date_applied : editData.date_applied?.slice(0,10) ?? ""
             })
         }else{
-            setFormData({
-                job_title: "",
-                company_name: "",
-                salary: "",
-                description: "",
-                application_status: "",
-                date_applied: ""
-            })
+            setFormData(INITIAL_FORM)
         }
     },[editData]);
 
@@ -71,14 +65,7 @@ function NewJobForm ({closeModal, fetchJobs, editData}){
             body: JSON.stringify(formData)
         });
 
-        setFormData({
-            job_title: "",
-            company_name: "",
-            salary: "",
-            description: "",
-            application_status: "",
-            date_applied: ""
-        })
+        setFormData(INITIAL_FORM)
         closeModal();
         fetchJobs();
     }
