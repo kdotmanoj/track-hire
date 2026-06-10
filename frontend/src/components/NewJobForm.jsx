@@ -85,7 +85,11 @@ function NewJobForm ({closeModal, fetchJobs, editData}){
                 <Textarea id="description" name="description" value={formData.description} onChange={handleChange}/>
 
                 <Label htmlFor="application_status">Application Status</Label>
-                <Select value={formData.application_status} onValueChange ={(value) => setFormData(prev => ({...prev,application_status : value}))} >
+                <Select value={formData.application_status} onValueChange ={(value) => {
+
+                    if (!value) return;
+                    setFormData(prev => ({...prev,application_status : value}))
+                    }}>
                     <SelectTrigger id="application_status">
                         <SelectValue placeholder="Select status"/>
                     </SelectTrigger>
