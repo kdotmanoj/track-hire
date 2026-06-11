@@ -13,6 +13,7 @@ function Dashboard(){
     const fetchJobs = async () => {
         try{
             const response = await fetch('http://localhost:5000/jobs');
+            if(!response.ok) throw new Error(` Server returned ${response.status}`);
             const data = await response.json();
             
             setJobs(data);

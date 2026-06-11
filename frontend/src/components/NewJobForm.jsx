@@ -54,20 +54,26 @@ function NewJobForm ({closeModal, fetchJobs, editData}){
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const url = editData ? `http://localhost:5000/jobs/${editData.job_id}` : `http://localhost:5000/jobs`;
-        const currentMethod = editData ? "PUT" : "POST";
-        
-        const response = await fetch(url,{
-            method: currentMethod,
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formData)
-        });
+        try {
+            const url = editData ? `http://localhost:5000/jobs/${editData.job_id}` : `http://localhost:5000/jobs`;
+            const currentMethod = editData ? "PUT" : "POST";
+            
+            const response = await fetch(url,{
+                method: currentMethod,
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData)
+            });
+            if(!response.ok) throw new Error(`Server sent ${response.status}`);
+    
+            setFormData(INITIAL_FORM)
+            closeModal();
+            fetchJobs();
 
-        setFormData(INITIAL_FORM)
-        closeModal();
-        fetchJobs();
+        } catch (error) {
+            console.error("Failed to submit : ",error);
+        }
     }
     return (
         <div className="modal-content">
