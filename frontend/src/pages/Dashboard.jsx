@@ -9,8 +9,12 @@ function Dashboard(){
     const [jobs,setJobs] = useState([]);
     const [showModal,setShowModal] = useState(false);
     const [editData,setEditData] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const fetchJobs = async () => {
+        setIsLoading(true);
+        setError(null);
         try{
             const response = await fetch('http://localhost:5000/jobs');
             if(!response.ok) throw new Error(` Server returned ${response.status}`);
@@ -18,8 +22,11 @@ function Dashboard(){
             
             setJobs(data);
         }
-        catch(error){
-            console.error("Error fetching jobs",error);
+        catch(err){
+            setError(err.message)
+        }
+        finally{
+            setIsLoading(false)
         }
     }
     const handleEdit = (id) => {
@@ -53,6 +60,12 @@ function Dashboard(){
         setShowModal(false)
     }
 
+    if(isLoading){
+        return <div>Loading your job...</div>
+    }
+    if(error){
+        return <div>Error : {error}</div>
+    }
     return (
         <div>
             <Button onClick={() => {

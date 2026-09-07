@@ -1,6 +1,8 @@
 const express = require('express');
 const pool = require('./database');
 const cors = require('cors');
+const authRoutes = require('./routes/auth');
+const authMiddleware = require('./middleware/auth')
 
 const app = express();
 const PORT = 5000;
@@ -12,45 +14,62 @@ app.use(cors({
 }));
 
 app.use(express.json());
+app.use('/auth', authRoutes);
+const   VALID_STATUSES = ['Applied','Interview','Offer','Rejected'];
 
-app.get('/jobs', async (request,response) => {
+app.get('/jobs', authMiddleware, async (req,res) => {
+    const user_id = req.userId;
     try{
-        const [rows] = await pool.query(`SELECT * FROM jobs`);
-        response.status(200).json(rows);
+        const [rows] = await pool.query(`SELECT * FROM jobs WHERE user_id = ?`,[user_id]);
+        res.status(200).json(rows);
     }
     catch(error){
         console.error('Error fetching jobs',error)
-        response.status(500).json({error: 'Internal server error'});
+        res.status(500).json({error: 'Internal server error'});
     }
 })
 
-app.get('/jobs/:id', async (request,response) => {
-    const {id} = request.params;
+app.get('/jobs/:id',authMiddleware, async (req,res) => {
+    const user_id = req.userId;
+    const {id} = req.params;
     try{
-        const [rows] = await pool.query(`SELECT * FROM jobs WHERE job_id = ?`,[id]);
+        const [rows] = await pool.query(`SELECT * FROM jobs WHERE job_id = ? && user_id = ?`,[id,user_id]);
         if(rows.length == 0){
-            return response.status(404).json({error: "Job not found"});
+            return res.status(404).json({error: "Job not found"});
         }
-        response.status(200).json(rows);
+        res.status(200).json(rows);
     }
     catch(error){
         console.error('Error fetching the job',error);
-        response.status(500).json({error: 'Internal server error'});
+        res.status(500).json({error: 'Internal server error'});
     }
 });
 
-app.post('/jobs', async (request,response) => {
+app.post('/jobs',authMiddleware, async (req,res) => {
+    const user_id = req.userId;
     const {
         job_title,
         company_name,
         salary,
         description,
         application_status,
-        date_applied
-    } = request.body;
+        date_applied,
+    } = req.body;
 
     if(!job_title || !company_name){
-        return response.status(400).json({error: 'Title and company are required'});
+        return res.status(400).json({error: 'Title and company are required'});
+    }
+
+    if(application_status && !VALID_STATUSES.includes(application_status)){
+        return res.status(400).json({message : "Invalid application status provided"})
+    }
+
+    if(salary && isNaN(Number(salary))){
+        return res.status(400).json({ error: "Salary must be a valid number." });
+    }
+
+    if (date_applied && isNaN(Date.parse(date_applied))) {
+        return res.status(400).json({ error: "Invalid date format for date_applied." });
     }
 
     try{
@@ -58,29 +77,33 @@ app.post('/jobs', async (request,response) => {
             `INSERT INTO jobs (
                 job_title,
                 company_name,
-                salary,description,
+                salary,
+                description,
                 application_status,
-                date_applied
-            ) VALUES (?,?,?,?,?,?)`,
+                date_applied,
+                user_id
+            ) VALUES (?,?,?,?,?,?,?)`,
             [
                 job_title,
                 company_name,
                 salary || null,
                 description || null,
                 application_status || 'Applied',
-                date_applied || null
+                date_applied || null,
+                user_id
             ]
         );
-        response.status(201).json({message: 'Job added succesfully'});
+        res.status(201).json({message: 'Job added succesfully'});
     }
     catch(error){
         console.error('Error inserting job:', error);
-        response.status(500).json({error: 'Internal server error'});
+        res.status(500).json({error: 'Internal server error'});
     }
 });
 
-app.put('/jobs/:id', async (request,response) => {
-    const {id} = request.params;
+app.put('/jobs/:id',authMiddleware, async (req,res) => {
+    const {id} = req.params;
+    const user_id = req.userId;
 
     const {
         job_title,
@@ -89,7 +112,19 @@ app.put('/jobs/:id', async (request,response) => {
         description,
         application_status,
         date_applied
-    } = request.body;
+    } = req.body;
+
+    if(application_status && !VALID_STATUSES.includes(application_status)){
+        return res.status(400).json({message : "Invalid application status provided"})
+    }
+
+    if(salary && isNaN(Number(salary))){
+        return res.status(400).json({ error: "Salary must be a valid number." });
+    }
+
+    if (date_applied && isNaN(Date.parse(date_applied))) {
+        return res.status(400).json({ error: "Invalid date format for date_applied." });
+    }
 
     try{
         const [result] = await pool.query(
@@ -99,8 +134,8 @@ app.put('/jobs/:id', async (request,response) => {
                 salary = ?,
                 description = ?,
                 application_status = ?,
-                date_applied = ?
-            WHERE job_id = ?`,
+                date_applied = ?,
+            WHERE job_id = ? AND user_id = ?`,
             [
                 job_title,
                 company_name,
@@ -108,34 +143,36 @@ app.put('/jobs/:id', async (request,response) => {
                 description || null,
                 application_status || 'Applied',
                 date_applied || null,
-                id
+                id,
+                user_id
             ]
         )
 
         if(result.affectedRows == 0){
-            return response.status(404).json({error: "Couldn't find the job"});
+            return res.status(404).json({error: "Couldn't find the job"});
         }
-        response.status(200).json({message: "Job updated successfully"});
+        res.status(200).json({message: "Job updated successfully"});
     }
     catch(error){
         console.error('Error updating the job',error);
-        response.status(500).json({error: "Internal server error"});
+        res.status(500).json({error: "Internal server error"});
     }
 });
 
-app.delete('/jobs/:id', async (request, response) => {
-    const {id} = request.params;
+app.delete('/jobs/:id',authMiddleware, async (req, res) => {
+    const {id} = req.params;
+    const user_id = req.userId;
     try{
-        const [result] = await pool.query(`DELETE FROM jobs WHERE job_id = ?`,[id]);
+        const [result] = await pool.query(`DELETE FROM jobs WHERE job_id = ? && user_id = ?`,[id,user_id]);
 
         if(result.affectedRows == 0){
-            return response.status(404).json({error: "Couldn't find the job"});
+            return res.status(404).json({error: "Couldn't find the job"});
         }
-        response.status(200).json({message: "Job deleted successfully"});
+        res.status(200).json({message: "Job deleted successfully"});
     }
     catch(error){
         console.error('Error deleting the job', error);
-        response.status(500).json({error: "Internal server error"});
+        res.status(500).json({error: "Internal server error"});
     }
 });
 
